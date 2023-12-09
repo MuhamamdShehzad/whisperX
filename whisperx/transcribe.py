@@ -14,7 +14,7 @@ from .utils import (LANGUAGES, TO_LANGUAGE_CODE, get_writer, optional_float,
                     optional_int, str2bool)
 
 
-def cli(audio:str):
+def cli(audio_path:str):
     # fmt: off
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     #parser.add_argument("audio", nargs="+", type=str, help="audio file(s) to transcribe")
@@ -168,12 +168,12 @@ def cli(audio:str):
     # model = load_model(model_name, device=device, download_root=model_dir)
     model = load_model(model_name, device=device, device_index=device_index, compute_type=compute_type, language=args['language'], asr_options=asr_options, vad_options={"vad_onset": vad_onset, "vad_offset": vad_offset}, task=task, threads=faster_whisper_threads)
 
-    for audio_path in args.pop("audio"):
-        audio = load_audio(audio_path)
-        # >> VAD & ASR
-        print(">>Performing transcription...")
-        result = model.transcribe(audio, batch_size=batch_size, chunk_size=chunk_size, print_progress=print_progress)
-        results.append((result, audio_path))
+    #for audio_path in args.pop("audio"):
+    audio = load_audio(audio_path)
+    # >> VAD & ASR
+    print(">>Performing transcription...")
+    result = model.transcribe(audio, batch_size=batch_size, chunk_size=chunk_size, print_progress=print_progress)
+    results.append((result, audio_path))
 
     # Unload Whisper and VAD
     del model
