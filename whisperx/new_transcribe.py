@@ -15,7 +15,7 @@ from .utils import (LANGUAGES, TO_LANGUAGE_CODE, get_writer, optional_float,
 
 
 def new_cli(audio_path='/content/file.wav',model="large-v2",_language="en",_align_model="WAV2VEC2_ASR_LARGE_LV60K_960H",_diarize=False,_min_speakers=None,_max_speakers=None,_hf_token=None,_print_progress=True):
-
+    
     model_name = model
     device = "cuda"
     device_index=0
@@ -113,7 +113,7 @@ def new_cli(audio_path='/content/file.wav',model="large-v2",_language="en",_alig
     results = []
     tmp_results = []
     # model = load_model(model_name, device=device, download_root=model_dir)
-    model = load_model(model_name, device=device, device_index=device_index, compute_type=compute_type, language=args['language'], asr_options=asr_options, vad_options={"vad_onset": vad_onset, "vad_offset": vad_offset}, task=task, threads=faster_whisper_threads)
+    model = load_model(model_name, device=device, device_index=device_index, compute_type=compute_type, language=language, asr_options=asr_options, vad_options={"vad_onset": vad_onset, "vad_offset": vad_offset}, task=task, threads=faster_whisper_threads)
 
     #for audio_path in args.pop("audio"):
     audio = load_audio(audio_path)
