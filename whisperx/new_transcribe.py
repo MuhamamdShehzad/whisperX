@@ -16,11 +16,11 @@ from .utils import (LANGUAGES, TO_LANGUAGE_CODE, get_writer, optional_float,
 
 def new_cli(audio_path='/content/file.wav',model="large-v2",_language="en",_align_model="WAV2VEC2_ASR_LARGE_LV60K_960H",_diarize=False,_min_speakers=None,_max_speakers=None,_hf_token=None,_print_progress=True):
     
-    model_name = model
-    device = "cuda"
-    device_index=0
-    batch_size=8
-    compute_type="float16"
+    model_name:str = model
+    device:str = "cuda"
+    device_index:int=0
+    batch_size:int=8
+    compute_type:str="float16"
     
     output_dir="."
     output_format="srt"
