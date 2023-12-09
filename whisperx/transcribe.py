@@ -14,11 +14,11 @@ from .utils import (LANGUAGES, TO_LANGUAGE_CODE, get_writer, optional_float,
                     optional_int, str2bool)
 
 
-def cli():
+def cli(audio:str):
     # fmt: off
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument("audio", nargs="+", type=str, help="audio file(s) to transcribe")
-    parser.add_argument("--model", default="small", help="name of the Whisper model to use")
+    #parser.add_argument("audio", nargs="+", type=str, help="audio file(s) to transcribe")
+    parser.add_argument("--model", default="large-v2", help="name of the Whisper model to use")
     parser.add_argument("--model_dir", type=str, default=None, help="the path to save model files; uses ~/.cache/whisper by default")
     parser.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu", help="device to use for PyTorch inference")
     parser.add_argument("--device_index", default=0, type=int, help="device index to use for FasterWhisper inference")
@@ -26,20 +26,20 @@ def cli():
     parser.add_argument("--compute_type", default="float16", type=str, choices=["float16", "float32", "int8"], help="compute type for computation")
 
     parser.add_argument("--output_dir", "-o", type=str, default=".", help="directory to save the outputs")
-    parser.add_argument("--output_format", "-f", type=str, default="all", choices=["all", "srt", "vtt", "txt", "tsv", "json", "aud"], help="format of the output file; if not specified, all available formats will be produced")
+    parser.add_argument("--output_format", "-f", type=str, default="srt", choices=["all", "srt", "vtt", "txt", "tsv", "json", "aud"], help="format of the output file; if not specified, all available formats will be produced")
     parser.add_argument("--verbose", type=str2bool, default=True, help="whether to print out the progress and debug messages")
 
     parser.add_argument("--task", type=str, default="transcribe", choices=["transcribe", "translate"], help="whether to perform X->X speech recognition ('transcribe') or X->English translation ('translate')")
-    parser.add_argument("--language", type=str, default=None, choices=sorted(LANGUAGES.keys()) + sorted([k.title() for k in TO_LANGUAGE_CODE.keys()]), help="language spoken in the audio, specify None to perform language detection")
+    parser.add_argument("--language", type=str, default='en', choices=sorted(LANGUAGES.keys()) + sorted([k.title() for k in TO_LANGUAGE_CODE.keys()]), help="language spoken in the audio, specify None to perform language detection")
 
     # alignment params
-    parser.add_argument("--align_model", default=None, help="Name of phoneme-level ASR model to do alignment")
+    parser.add_argument("--align_model", default='WAV2VEC2_ASR_LARGE_LV60K_960H', help="Name of phoneme-level ASR model to do alignment")
     parser.add_argument("--interpolate_method", default="nearest", choices=["nearest", "linear", "ignore"], help="For word .srt, method to assign timestamps to non-aligned words, or merge them into neighbouring.")
     parser.add_argument("--no_align", action='store_true', help="Do not perform phoneme alignment")
     parser.add_argument("--return_char_alignments", action='store_true', help="Return character-level alignments in the output json file")
 
     # vad params
-    parser.add_argument("--vad_onset", type=float, default=0.500, help="Onset threshold for VAD (see pyannote.audio), reduce this if speech is not being detected")
+    parser.add_argument("--vad_onset", type=float, default=0.100, help="Onset threshold for VAD (see pyannote.audio), reduce this if speech is not being detected")
     parser.add_argument("--vad_offset", type=float, default=0.363, help="Offset threshold for VAD (see pyannote.audio), reduce this if speech is not being detected.")
     parser.add_argument("--chunk_size", type=int, default=30, help="Chunk size for merging VAD segments. Default is 30, reduce this if the chunk is too long.")
 
@@ -73,9 +73,9 @@ def cli():
 
     parser.add_argument("--threads", type=optional_int, default=0, help="number of threads used by torch for CPU inference; supercedes MKL_NUM_THREADS/OMP_NUM_THREADS")
 
-    parser.add_argument("--hf_token", type=str, default=None, help="Hugging Face Access Token to access PyAnnote gated models")
+    parser.add_argument("--hf_token", type=str, default='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', help="Hugging Face Access Token to access PyAnnote gated models")
 
-    parser.add_argument("--print_progress", type=str2bool, default = False, help = "if True, progress will be printed in transcribe() and align() methods.")
+    parser.add_argument("--print_progress", type=str2bool, default = True, help = "if True, progress will be printed in transcribe() and align() methods.")
     # fmt: on
 
     args = parser.parse_args().__dict__
@@ -106,7 +106,7 @@ def cli():
 
     chunk_size: int = args.pop("chunk_size")
 
-    diarize: bool = args.pop("diarize")
+    diarize: bool = True #args.pop("diarize")
     min_speakers: int = args.pop("min_speakers")
     max_speakers: int = args.pop("max_speakers")
     print_progress: bool = args.pop("print_progress")
